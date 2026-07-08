@@ -12,13 +12,13 @@ class TecnicoRegistro(BaseModel):
     apellidos: str
     cedula: str
     telefono: str
-    password: str
+    password: str = Field(min_length=6, max_length=72)
     foto_perfil_url: Optional[str] = None
 
 
 class TecnicoLogin(BaseModel):
     cedula: str
-    password: str
+    password: str = Field(min_length=1, max_length=72)
 
 
 class TecnicoUpdate(BaseModel):
