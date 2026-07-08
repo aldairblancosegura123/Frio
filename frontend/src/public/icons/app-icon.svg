@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512" role="img" aria-label="FrioTech">
+  <defs>
+    <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#37E7FF" />
+      <stop offset="100%" stop-color="#4D71FF" />
+    </linearGradient>
+  </defs>
+  <rect width="512" height="512" rx="120" fill="#0A1B2D" />
+  <rect x="72" y="72" width="368" height="368" rx="92" fill="url(#g)" opacity="0.18" />
+  <path d="M168 170h196v44H218v62h130v44H218v100h-50V170z" fill="#DDFBFF" />
+  <path d="M300 170h44c25 0 46 20 46 46v158c0 25-21 46-46 46h-44v-44h36c5 0 10-4 10-10V224c0-6-5-10-10-10h-36v-44z" fill="#37E7FF" />
+</svg>

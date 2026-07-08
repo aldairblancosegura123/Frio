@@ -13,6 +13,7 @@ const menuToggle = document.querySelector('#menuToggle')
 const menuDropdown = document.querySelector('#menuDropdown')
 const menuTechnicianName = document.querySelector('#menuTechnicianName')
 const menuBackdrop = document.querySelector('#menuBackdrop')
+const installAppButton = document.querySelector('#installAppButton')
 const menuItems = document.querySelectorAll('.menu-item[data-action]')
 const statsPanel = document.querySelector('#statsPanel')
 const statusBadges = document.querySelector('#statusBadges')
@@ -65,6 +66,7 @@ const tecnicoDataKey = 'friotech_tecnico_data'
 let notificationAudioContext = null
 let foregroundFcmListenerReady = false
 let notificationToastContainer = null
+let deferredInstallPrompt = null
 
 const state = {
   token: localStorage.getItem(storageKey) || null,
@@ -140,6 +142,35 @@ function closeMenu() {
   menuToggle?.setAttribute('aria-expanded', 'false')
 }
 
+function showInstallButton(show) {
+  if (!installAppButton) return
+  installAppButton.classList.toggle('hidden', !show)
+}
+
+async function tryInstallPwa() {
+  if (!deferredInstallPrompt) {
+    setMessage('La instalación directa no está disponible en este navegador. Usa "Agregar a pantalla de inicio".', true)
+    return
+  }
+
+  deferredInstallPrompt.prompt()
+  const result = await deferredInstallPrompt.userChoice.catch(() => null)
+  if (result?.outcome === 'accepted') {
+    setMessage('Instalando app...')
+  }
+  deferredInstallPrompt = null
+  showInstallButton(false)
+}
+
+async function registerAppServiceWorker() {
+  if (!('serviceWorker' in navigator)) return
+  try {
+    await navigator.serviceWorker.register('/firebase-messaging-sw.js')
+  } catch (error) {
+    console.warn('[PWA] No se pudo registrar Service Worker:', error)
+  }
+}
+
 function toggleMenu() {
   if (!menuDropdown) return
   const isOpen = !menuDropdown.classList.contains('hidden')
@@ -166,6 +197,23 @@ registrarClienteButton?.addEventListener('click', (e) => {
 
 cancelCrearCliente?.addEventListener('click', () => {
   hideCrearForm()
+})
+
+installAppButton?.addEventListener('click', async () => {
+  await tryInstallPwa()
+  closeMenu()
+})
+
+window.addEventListener('beforeinstallprompt', (event) => {
+  event.preventDefault()
+  deferredInstallPrompt = event
+  showInstallButton(true)
+})
+
+window.addEventListener('appinstalled', () => {
+  deferredInstallPrompt = null
+  showInstallButton(false)
+  setMessage('App instalada. Ya puedes abrir FrioTech como aplicación.')
 })
 
 crearClienteForm?.addEventListener('submit', async (event) => {
@@ -1367,6 +1415,9 @@ function renderClientes() {
 
 async function init() {
   if (!loginForm || !logoutButton || !statsPanel || !clientesSection || !agendasSection || !notificacionesSection) return
+
+  showInstallButton(false)
+  void registerAppServiceWorker()
 
   void ensureForegroundFcmListener()
 
