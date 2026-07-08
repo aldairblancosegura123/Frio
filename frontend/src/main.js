@@ -1149,12 +1149,22 @@ async function apiFetch(path, options = {}) {
     headers,
   })
 
+  const parseResponseBody = async () => {
+    const raw = await response.text().catch(() => '')
+    if (!raw) return null
+    try {
+      return JSON.parse(raw)
+    } catch (_) {
+      return { _raw: raw }
+    }
+  }
+
   if (!response.ok) {
-    const error = await response.json().catch(() => null)
+    const error = await parseResponseBody()
     throw new Error(error?.detail || response.statusText || 'Error de red')
   }
 
-  return response.json()
+  return parseResponseBody()
 }
 
 async function loginTecnico(cedula, password) {
@@ -1164,12 +1174,26 @@ async function loginTecnico(cedula, password) {
     body: JSON.stringify({ cedula, password }),
   })
 
+  const parseResponseBody = async () => {
+    const raw = await response.text().catch(() => '')
+    if (!raw) return null
+    try {
+      return JSON.parse(raw)
+    } catch (_) {
+      return { _raw: raw }
+    }
+  }
+
   if (!response.ok) {
-    const error = await response.json().catch(() => null)
+    const error = await parseResponseBody()
     throw new Error(error?.detail || response.statusText || 'Error de autenticación')
   }
 
-  return response.json()
+  const data = await parseResponseBody()
+  if (!data?.access_token) {
+    throw new Error('La API respondió vacío o con formato inválido. Verifica VITE_API_BASE y el estado de friotech-api en Render.')
+  }
+  return data
 }
 
 async function listarClientes() {
