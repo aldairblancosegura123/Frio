@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Agenda de solicitudes - FrioTech</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Space+Grotesk:wght@400;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+  </head>
+  <body class="min-h-screen bg-[var(--bg)] text-[var(--text)]">
+    <div class="absolute inset-0 overflow-hidden pointer-events-none">
+      <div class="absolute -top-24 -left-24 w-72 h-72 rounded-full bg-[rgba(61,220,255,0.14)] blur-3xl"></div>
+      <div class="absolute bottom-0 right-0 w-96 h-96 rounded-full bg-[rgba(77,113,255,0.14)] blur-3xl"></div>
+    </div>
+
+    <main class="relative z-10 max-w-4xl mx-auto p-6 pb-12 grid gap-6">
+      <section class="surface-raised rounded-3xl p-6">
+        <div class="flex flex-wrap items-center justify-between gap-3">
+          <div>
+            <h1 class="hero-title text-3xl">Aceptar y agendar solicitud</h1>
+            <p class="hero-copy mt-2">Selecciona fecha y hora para confirmar la visita técnica.</p>
+          </div>
+          <button id="volverPanelBtn" type="button" class="btn-ghost">Volver al panel</button>
+        </div>
+      </section>
+
+      <section class="accordion-item surface-raised overflow-hidden">
+        <button id="solicitudesPendientesHeader" type="button" class="accordion-header w-full" aria-expanded="true">
+          <div class="text-left">
+            <h2 class="font-display text-xl">Solicitudes pendientes</h2>
+            <p class="text-sm text-[var(--text-dim)] mt-1">Puedes cambiar de solicitud antes de agendar.</p>
+          </div>
+          <span class="accordion-icon">+</span>
+        </button>
+
+        <div id="solicitudesPendientesPanel" class="accordion-panel grid gap-4">
+          <div id="solicitudResumen" class="grid gap-2 text-sm text-[var(--text-dim)]"></div>
+
+          <div id="solicitudesPendientesList" class="grid gap-3"></div>
+
+          <form id="agendaForm" class="grid gap-4 mt-2 max-w-xl">
+            <div class="grid gap-2 sm:grid-cols-2">
+              <div>
+                <label for="agendaFecha" class="text-sm text-[var(--text-dim)]">Día</label>
+                <input id="agendaFecha" type="date" class="input-field" required />
+              </div>
+              <div>
+                <label for="agendaHora" class="text-sm text-[var(--text-dim)]">Hora</label>
+                <input id="agendaHora" type="time" class="input-field" required />
+              </div>
+            </div>
+            <button id="guardarAgendaBtn" type="submit" class="btn-primary">Confirmar agenda</button>
+            <p id="agendaMsg" class="text-sm text-[var(--text-dim)]"></p>
+          </form>
+        </div>
+      </section>
+
+      <section class="accordion-item surface-raised overflow-hidden">
+        <button id="calendarioAgendaHeader" type="button" class="accordion-header w-full" aria-expanded="false">
+          <div class="text-left">
+            <h2 class="font-display text-2xl">Calendario de agendas</h2>
+            <p class="text-sm text-[var(--text-dim)]">Visualiza tus solicitudes agendadas por día y hora.</p>
+          </div>
+          <span class="accordion-icon">+</span>
+        </button>
+
+        <div id="calendarioAgendaPanel" class="accordion-panel hidden grid gap-4">
+          <div class="agenda-calendar-toolbar">
+            <button id="agendaMonthPrev" type="button" class="btn-ghost btn-small" aria-label="Mes anterior">◀</button>
+            <strong id="agendaCalendarMonthLabel" class="font-display text-lg"></strong>
+            <button id="agendaMonthNext" type="button" class="btn-ghost btn-small" aria-label="Mes siguiente">▶</button>
+          </div>
+
+          <div class="agenda-calendar-weekdays">
+            <span>Dom</span>
+            <span>Lun</span>
+            <span>Mar</span>
+            <span>Mié</span>
+            <span>Jue</span>
+            <span>Vie</span>
+            <span>Sáb</span>
+          </div>
+
+          <div id="agendaCalendarGrid" class="agenda-calendar-grid"></div>
+
+          <div id="agendaDayDetail" class="surface rounded-2xl p-4 border border-white/10 text-sm text-[var(--text-dim)]"></div>
+        </div>
+      </section>
+    </main>
+
+    <script type="module" src="./agenda.js"></script>
+  </body>
+</html>

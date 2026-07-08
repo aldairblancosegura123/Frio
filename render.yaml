@@ -1,0 +1,40 @@
+services:
+  - type: web
+    name: friotech-api
+    env: python
+    rootDir: .
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT
+    healthCheckPath: /health
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.12.0
+      - key: MONGO_URI
+        sync: false
+      - key: MONGO_DB_NAME
+        value: friotech
+      - key: JWT_SECRET_KEY
+        sync: false
+      - key: JWT_ALGORITHM
+        value: HS256
+      - key: JWT_EXPIRE_MINUTES
+        value: "10080"
+      - key: ENV
+        value: production
+      - key: DIAS_PROXIMO_MANTENIMIENTO
+        value: "100"
+      - key: FCM_CREDENTIALS_JSON
+        sync: false
+      - key: CORS_ORIGINS
+        sync: false
+
+staticSites:
+  - name: friotech-frontend
+    rootDir: frontend
+    buildCommand: npm install && npm run build
+    publishPath: dist
+    pullRequestPreviewsEnabled: false
+    envVars:
+      - key: VITE_API_BASE
+        sync: false

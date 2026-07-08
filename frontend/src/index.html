@@ -1,0 +1,204 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>FríoTech — Técnico</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Space+Grotesk:wght@400;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+  </head>
+  <body class="min-h-screen bg-[var(--bg)] text-[var(--text)]">
+    <div class="absolute inset-0 overflow-hidden pointer-events-none">
+      <div class="absolute -top-24 -left-24 w-72 h-72 rounded-full bg-[rgba(61,220,255,0.14)] blur-3xl"></div>
+      <div class="absolute bottom-0 right-0 w-96 h-96 rounded-full bg-[rgba(77,113,255,0.14)] blur-3xl"></div>
+    </div>
+
+    <div class="relative z-10">
+      <div id="menuBackdrop" class="hidden fixed inset-0 z-40 backdrop-blur-sm bg-black/20"></div>
+      <div id="menuContainer" class="hidden fixed top-6 left-6 z-50">
+        <button id="menuToggle" type="button" class="btn-ghost px-4 py-3 text-xl" aria-label="Abrir menú">☰</button>
+        <div id="menuDropdown" class="hidden mt-2 min-w-[16rem] overflow-hidden rounded-3xl border border-white/10 bg-[var(--surface-raised)] p-3 shadow-xl z-50">
+          <div id="menuTechnicianName" class="text-center text-sm font-medium text-[var(--text)] mb-3">Técnico</div>
+          <div class="grid gap-2">
+            <button type="button" class="menu-item btn-ghost text-left" data-action="agenda">Agenda</button>
+            <button type="button" class="menu-item btn-ghost text-left" data-action="notificaciones">Notificaciones</button>
+          </div>
+          <div class="mt-3 pt-3 border-t border-white/10">
+            <button type="button" id="logoutButton" class="btn-secondary w-full">Cerrar sesión</button>
+          </div>
+        </div>
+      </div>
+      <main class="max-w-6xl mx-auto p-6 pb-12">
+        <section class="hero-card surface-raised overflow-hidden">
+          <div class="hero-decor"></div>
+          <div class="grid gap-8 lg:grid-cols-[1.2fr_0.8fr] items-center">
+            <div>
+              <p class="eyebrow text-center">Panel técnico</p>
+              <h3 class="hero-title font-display">Todo sobre tus clientes, en un solo lugar.</h3>
+              <p id="heroCopy" class="hero-copy">Inicia sesión como técnico para cargar la lista de clientes que registraste en el sistema.</p>
+              <form id="loginForm" class="mt-6 grid gap-4 max-w-xl">
+                <div>
+                  <label class="text-sm text-[var(--text-dim)] font-medium" for="cedulaInput">Cédula</label>
+                  <input id="cedulaInput" name="cedula" type="text" placeholder="Ej. 1234567890" class="input-field" autocomplete="off" required />
+                </div>
+                <div>
+                  <label class="text-sm text-[var(--text-dim)] font-medium" for="passwordInput">Contraseña</label>
+                  <input id="passwordInput" name="password" type="password" placeholder="********" class="input-field" autocomplete="off" required />
+                </div>
+                <button type="submit" class="btn-primary">Ingresar técnico</button>
+                <p id="loginMessage" class="text-sm text-[var(--text-dim)]"></p>
+                <p class="text-center text-sm mt-3">
+                  <a href="./register.html" class="text-[var(--primary)] hover:underline">Registrarse como técnico</a>
+                </p>
+                <p class="text-center text-sm">
+                  <a href="./cliente.html" class="text-[var(--primary)] hover:underline">Acceso clientes</a>
+                </p>
+              </form>
+            </div>
+            <div id="statsPanel" class="stats-panel surface hidden">
+              <div class="stats-header" id="statusBadges"></div>
+              <div class="stat-item">
+                <span>Clientes registrados</span>
+                <strong id="clientesCount">0</strong>
+              </div>
+              <div class="stat-item">
+                <span>Último cliente</span>
+                <strong id="lastCliente">-</strong>
+              </div>
+              <div class="stat-item">
+                <span>Estado de la sesión</span>
+                <strong id="sessionStatus">Listo</strong>
+              </div>
+              <button id="registrarClienteButton" class="btn-primary w-full mt-4">Registrar clientes</button>
+              <form id="crearClienteForm" class="mt-4 hidden" autocomplete="off">
+                <div class="grid gap-3">
+                  <input id="nuevo_nombre" name="nombre" type="text" placeholder="Nombre completo" class="input-field" required />
+                  <input id="nuevo_cedula" name="cedula" type="text" placeholder="Cédula" class="input-field" required />
+                  <input id="nuevo_telefono" name="telefono" type="text" placeholder="Teléfono" class="input-field" />
+                  <input id="nuevo_direccion" name="direccion" type="text" placeholder="Dirección" class="input-field" />
+                  <div class="button-grid">
+                    <button type="submit" class="btn-primary">Guardar cliente</button>
+                    <button type="button" id="cancelCrearCliente" class="btn-secondary">Cancelar</button>
+                  </div>
+                  <p id="crearClienteMsg" class="text-sm text-[var(--text-dim)]"></p>
+                </div>
+              </form>
+            </div>
+          </div>
+        </section>
+
+        <section id="notificacionesSection" class="mt-10 hidden accordion-item surface-raised overflow-hidden">
+          <button id="notificacionesHeader" type="button" class="accordion-header w-full" aria-expanded="true">
+            <div class="flex items-center justify-between gap-4 w-full">
+              <div class="text-left">
+                <h2 class="text-2xl font-display">Notificaciones</h2>
+                <p class="text-sm text-[var(--text-dim)] flex items-center gap-2">
+                  <span>Solicitudes nuevas:</span>
+                  <strong id="notificacionesCount" class="badge badge-primary">0</strong>
+                </p>
+              </div>
+              <span class="accordion-icon">+</span>
+            </div>
+          </button>
+          <div id="notificacionesPanelBody" class="accordion-panel hidden grid gap-4">
+            <div class="flex items-center justify-end gap-3">
+              <label for="notificacionesFilter" class="text-sm text-[var(--text-dim)]">Filtrar</label>
+              <select id="notificacionesFilter" class="input-field !w-auto !py-2 !px-3">
+                <option value="todas">Todas</option>
+                <option value="pendientes">Pendientes</option>
+                <option value="urgentes">Urgentes</option>
+                <option value="aceptadas">Aceptadas</option>
+                <option value="rechazadas">Rechazadas</option>
+                <option value="completadas">Completadas</option>
+              </select>
+            </div>
+            <div id="notificacionesList" class="grid gap-4 lg:grid-cols-2"></div>
+            <div id="notificacionesEmpty" class="mt-2 surface-raised p-6 rounded-3xl text-[var(--text-dim)] hidden">
+              No tienes solicitudes nuevas para mostrar.
+            </div>
+          </div>
+        </section>
+
+        <section id="clientesSection" class="mt-6 hidden accordion-item surface-raised overflow-hidden">
+          <button id="clientesHeader" type="button" class="accordion-header w-full" aria-expanded="false">
+            <div class="flex items-center justify-between gap-4 w-full">
+              <div class="text-left">
+                <h2 class="text-2xl font-display">Lista de clientes</h2>
+                <p class="text-sm text-[var(--text-dim)] flex items-center gap-2">
+                  <span>Clientes registrados:</span>
+                  <strong id="clientesSectionCount" class="badge badge-primary">0</strong>
+                </p>
+              </div>
+              <span class="accordion-icon">+</span>
+            </div>
+          </button>
+          <div id="clientesPanelBody" class="accordion-panel hidden grid gap-4">
+            <div id="clientesList" class="grid gap-4"></div>
+            <div id="emptyState" class="surface-raised p-6 rounded-3xl text-[var(--text-dim)] hidden">
+              No hay clientes registrados por este técnico.
+            </div>
+          </div>
+        </section>
+
+        <section id="agendasSection" class="mt-6 hidden accordion-item surface-raised overflow-hidden">
+          <button id="agendasHeader" type="button" class="accordion-header w-full" aria-expanded="false">
+            <div class="flex items-center justify-between gap-4 w-full">
+              <div class="text-left">
+                <h2 class="text-2xl font-display">Calendario de agendas</h2>
+                <p class="text-sm text-[var(--text-dim)]">Tus solicitudes agendadas por día y hora.</p>
+              </div>
+              <span class="accordion-icon">+</span>
+            </div>
+          </button>
+          <div id="agendasPanelBody" class="accordion-panel hidden grid gap-4">
+            <div class="agenda-calendar-toolbar">
+              <button id="agendasMonthPrev" type="button" class="btn-ghost btn-small" aria-label="Mes anterior">◀</button>
+              <strong id="agendasMonthLabel" class="font-display text-lg"></strong>
+              <button id="agendasMonthNext" type="button" class="btn-ghost btn-small" aria-label="Mes siguiente">▶</button>
+            </div>
+
+            <div class="agenda-calendar-weekdays">
+              <span>Dom</span>
+              <span>Lun</span>
+              <span>Mar</span>
+              <span>Mié</span>
+              <span>Jue</span>
+              <span>Vie</span>
+              <span>Sáb</span>
+            </div>
+
+            <div id="agendasCalendarGrid" class="agenda-calendar-grid"></div>
+
+            <div id="agendasDayDetail" class="surface rounded-2xl p-4 border border-white/10 text-sm text-[var(--text-dim)]"></div>
+          </div>
+        </section>
+
+        <!-- Modal: Equipos del cliente 
+        <div id="clienteEquiposModal" class="fixed inset-0 z-50 hidden items-center justify-center p-6">
+          <div class="absolute inset-0 bg-black/60" id="clienteEquiposBackdrop"></div>
+          <div class="relative z-10 max-w-4xl w-full mx-auto surface-raised rounded-3xl p-6 overflow-hidden">
+            <div class="flex items-center justify-between mb-4">
+              <div>
+                <h3 id="modalClienteNombre" class="text-xl font-display">Equipos</h3>
+                <p id="modalClienteCedula" class="text-sm text-[var(--text-dim)]"></p>
+              </div>
+              <div class="flex items-center gap-3">
+                <button id="verTodosEquiposBtn" class="btn-ghost">Ver todos los equipos</button>
+                <button id="closeClienteEquipos" class="btn-secondary">Cerrar</button>
+              </div>
+            </div>
+
+            <div id="modalEquiposContent" class="grid gap-4">
+              <div id="modalEquiposList" class="grid gap-4 lg:grid-cols-2"></div>
+              <div id="modalEmpty" class="text-[var(--text-dim)] hidden">No se encontraron equipos para este cliente.</div>
+            </div>
+          </div>
+        </div>
+        -->
+      </main>
+    </div>
+
+    <script type="module" src="./main.js"></script>
+  </body>
+</html>

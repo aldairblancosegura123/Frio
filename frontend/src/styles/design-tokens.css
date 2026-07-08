@@ -1,0 +1,28 @@
+:root{
+  /* Paleta principal */
+  --bg: #0B1620;
+  --surface: #13212F;
+  --surface-raised: #1B2E40;
+  --primary: #3DDCFF;
+  --text: #E8F1F5;
+  --text-dim: #7E97A8;
+  --danger: #FF5A5F;
+  --success: #4ADE9C;
+
+  /* Spacing / radii (básicos) */
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 20px;
+}
+
+/* Reset rápido y base */
+*{box-sizing:border-box}
+html,body{height:100%}
+body{margin:0;font-family:Inter, system-ui, -apple-system, 'Segoe UI', Roboto, Arial;color:var(--text);background:var(--bg)}
+
+/* Utilities para superficies */
+.surface{background:var(--surface)}
+.surface-raised{background:var(--surface-raised);border-radius:var(--radius-md)}
+
+/* Small helpers */
+.muted{color:var(--text-dim)}

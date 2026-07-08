@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Registro Técnico — FríoTech</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Space+Grotesk:wght@400;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="./index.css">
+  </head>
+  <body class="min-h-screen bg-[var(--bg)] text-[var(--text)]">
+    <div class="min-h-screen flex items-center justify-center p-6">
+      <div class="max-w-md w-full surface-raised p-8 rounded-3xl shadow-xl border border-white/10">
+        <div class="text-center mb-6">
+          <p class="eyebrow text-center">Registro técnico</p>
+          <h1 class="text-3xl font-display font-bold mt-3">Crea tu cuenta</h1>
+          <p class="text-sm text-[var(--text-dim)] mt-2">Registra tus datos para iniciar sesión como técnico.</p>
+        </div>
+
+        <form id="registerForm" class="grid gap-4">
+          <input id="regNombres" name="nombres" type="text" placeholder="Nombres" class="input-field" required />
+          <input id="regApellidos" name="apellidos" type="text" placeholder="Apellidos" class="input-field" required />
+          <input id="regCedula" name="cedula" type="text" placeholder="Cédula" class="input-field" required />
+          <input id="regTelefono" name="telefono" type="text" placeholder="Teléfono" class="input-field" required />
+          <input id="regPassword" name="password" type="password" placeholder="Contraseña" class="input-field" required />
+          <input id="regFotoPerfil" name="foto_perfil_url" type="url" placeholder="URL de foto de perfil (opcional)" class="input-field" />
+          <button type="submit" class="btn-primary w-full">Registrar técnico</button>
+          <p id="registerMessage" class="text-sm text-[var(--text-dim)]"></p>
+        </form>
+      </div>
+    </div>
+
+    <script type="module">
+      const API_BASE = 'http://localhost:8000'
+      const registerForm = document.querySelector('#registerForm')
+      const registerMessage = document.querySelector('#registerMessage')
+      const regNombres = document.querySelector('#regNombres')
+      const regApellidos = document.querySelector('#regApellidos')
+      const regCedula = document.querySelector('#regCedula')
+      const regTelefono = document.querySelector('#regTelefono')
+      const regPassword = document.querySelector('#regPassword')
+      const regFotoPerfil = document.querySelector('#regFotoPerfil')
+
+      function setMessage(text, error = false) {
+        if (!registerMessage) return
+        registerMessage.textContent = text
+        registerMessage.style.color = error ? '#FF5A5F' : 'var(--text-dim)'
+      }
+
+      async function registerTecnico(data) {
+        const response = await fetch(`${API_BASE}/api/tecnico/auth/registro`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(data),
+        })
+
+        if (!response.ok) {
+          const error = await response.json().catch(() => null)
+          throw new Error(error?.detail || response.statusText || 'Error al registrar técnico')
+        }
+
+        return response.json()
+      }
+
+      registerForm?.addEventListener('submit', async (event) => {
+        event.preventDefault()
+        setMessage('Registrando técnico...')
+
+        try {
+          const payload = {
+            nombres: regNombres.value.trim(),
+            apellidos: regApellidos.value.trim(),
+            cedula: regCedula.value.trim(),
+            telefono: regTelefono.value.trim(),
+            password: regPassword.value,
+            foto_perfil_url: regFotoPerfil.value.trim() || undefined,
+          }
+
+          const result = await registerTecnico(payload)
+          setMessage('Registro exitoso. Volviendo al login en 1.5 segundos...', false)
+          registerForm.reset()
+          setTimeout(() => {
+            window.close()
+            window.location.href = './index.html'
+          }, 1500)
+        } catch (err) {
+          setMessage(err.message || 'Error al registrar técnico.', true)
+        }
+      })
+    </script>
+  </body>
+</html>

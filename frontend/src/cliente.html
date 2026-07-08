@@ -1,0 +1,214 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Cliente - FrioTech</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Space+Grotesk:wght@400;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+  </head>
+  <body class="min-h-screen bg-[var(--bg)] text-[var(--text)]">
+    <div class="relative z-10">
+      <div id="menuBackdrop" class="hidden fixed inset-0 z-40 backdrop-blur-sm bg-black/20"></div>
+      <div id="menuContainer" class="hidden fixed top-6 left-6 z-50">
+        <button id="menuToggle" type="button" class="btn-ghost px-4 py-3 text-xl" aria-label="Abrir menú">☰</button>
+        <div id="menuDropdown" class="hidden mt-2 min-w-[16rem] overflow-hidden rounded-3xl border border-white/10 bg-[var(--surface-raised)] p-3 shadow-xl z-50">
+          <div id="menuClientName" class="text-center text-sm font-medium text-[var(--text)] mb-3">Cliente</div>
+          <div class="grid gap-2">
+            <button type="button" class="menu-item btn-ghost text-left" data-target="equiposSection">Mis equipos</button>
+            <button type="button" class="menu-item btn-ghost text-left" data-target="agendasSection">Agendas</button>
+            <button type="button" class="menu-item btn-ghost text-left" data-target="calificacionesSection">Calificar técnico</button>
+            <button type="button" class="menu-item btn-ghost text-left" data-target="solicitudesSection">Solicitudes</button>
+          </div>
+          <div class="mt-3 pt-3 border-t border-white/10">
+            <button type="button" id="logoutBtn" class="btn-secondary w-full">Cerrar sesión</button>
+          </div>
+        </div>
+      </div>
+
+      <main class="max-w-6xl mx-auto p-6 pb-12 grid gap-6">
+      <section class="surface-raised rounded-3xl p-6">
+        <h1 class="hero-title text-3xl mb-2 text-center">Bienvenido</h1>
+        <p id="clienteSubtitle" class="hero-copy text-center">Ingresa con tu cédula o NIT para ver tus equipos, crear solicitudes y  calificar.</p>
+
+        <form id="clienteLoginForm" class="mt-5 max-w-md grid gap-3">
+          <label class="text-sm text-[var(--text-dim)] font-medium" for="clienteCedulaInput">Cédula o NIT</label>
+          <input id="clienteCedulaInput" type="text" class="input-field" placeholder="Ej. 1234567890" required />
+          <button class="btn-primary" type="submit">Ingresar</button>
+          <p id="clienteLoginMessage" class="text-sm text-[var(--text-dim)]">Solo necesitas tu cédula o NIT.</p>
+        </form>
+      </section>
+
+      <section id="clienteAppSection" class="hidden grid gap-6">
+        <section id="equiposSection" class="accordion-item surface-raised">
+          <button type="button" class="accordion-header" data-accordion-toggle="equiposPanel" aria-expanded="false">
+            <div>
+              <h2 class="font-display text-2xl">Equipos</h2>
+              <p class="text-sm text-[var(--text-dim)]">Tus equipos, alertas y mantenimientos.</p>
+            </div>
+            <span class="accordion-icon">+</span>
+          </button>
+          <div id="equiposPanel" class="accordion-panel hidden">
+            <div class="flex items-center justify-between gap-4 mt-4">
+              <div class="flex items-center gap-2">
+                <span id="equiposCount" class="badge badge-primary">0 equipos</span>
+                <select id="equiposFilter" class="input-field !w-auto !py-2 !px-3">
+                  <option value="todos">Todos</option>
+                  <option value="vencidos">Vencidos</option>
+                  <option value="al_dia">Al día</option>
+                </select>
+              </div>
+            </div>
+            <div id="equiposEmpty" class="text-[var(--text-dim)] mt-4 hidden">No tienes equipos registrados.</div>
+            <div id="equiposList" class="grid gap-3 mt-4"></div>
+          </div>
+        </section>
+
+        <section id="solicitudesSection" class="accordion-item surface-raised">
+          <button type="button" class="accordion-header" data-accordion-toggle="solicitudesPanel" aria-expanded="false">
+            <div>
+              <h2 class="font-display text-2xl">Solicitudes</h2>
+              <p class="text-sm text-[var(--text-dim)]">Pide instalacion o revision a tu tecnico.</p>
+            </div>
+            <span class="accordion-icon">+</span>
+          </button>
+          <div id="solicitudesPanel" class="accordion-panel hidden">
+            <div class="grid gap-4 mt-4">
+              <section class="accordion-item surface-raised">
+                <button type="button" class="accordion-header" data-accordion-toggle="solicitudInstalacionPanel" aria-expanded="false">
+                  <div>
+                    <h3 class="font-display text-xl">Nueva instalacion</h3>
+                    <p class="text-sm text-[var(--text-dim)]">Registra un nuevo equipo para tu hogar o negocio.</p>
+                  </div>
+                  <span class="accordion-icon">+</span>
+                </button>
+                <div id="solicitudInstalacionPanel" class="accordion-panel hidden">
+                  <form id="solicitudInstalacionForm" class="grid gap-3 mt-4">
+                    <select id="instalacionTecnico" class="input-field" required></select>
+                    <textarea id="instalacionDescripcion" rows="3" class="input-field rounded-2xl" placeholder="Nota de la instalacion"></textarea>
+                    <button type="submit" class="btn-primary">Solicitar instalacion</button>
+                    <p id="instalacionMsg" class="text-sm text-[var(--text-dim)]"></p>
+                  </form>
+                </div>
+              </section>
+
+              <section class="accordion-item surface-raised">
+                <button type="button" class="accordion-header" data-accordion-toggle="solicitudRevisionPanel" aria-expanded="false">
+                  <div>
+                    <h3 class="font-display text-xl">Revision por anomalia</h3>
+                    <p class="text-sm text-[var(--text-dim)]">Reporta una falla y marca la prioridad del caso.</p>
+                  </div>
+                  <span class="accordion-icon">+</span>
+                </button>
+                <div id="solicitudRevisionPanel" class="accordion-panel hidden">
+                  <form id="solicitudRevisionForm" class="grid gap-3 mt-4">
+                    <select id="revisionTecnico" class="input-field" required></select>
+                    <input id="revisionEquipo" type="hidden" />
+                    <select id="revisionPrioridad" class="input-field" required>
+                      <option value="urgente">🔴 Urgente</option>
+                      <option value="normal">🔵 Normal</option>
+                    </select>
+                    <textarea id="revisionDescripcion" rows="3" class="input-field rounded-2xl" placeholder="Nota de la revision"></textarea>
+                    <button type="submit" class="btn-primary">Solicitar revision</button>
+                    <p id="revisionMsg" class="text-sm text-[var(--text-dim)]"></p>
+                  </form>
+                </div>
+              </section>
+
+              <section class="accordion-item surface-raised">
+                <button type="button" class="accordion-header" data-accordion-toggle="solicitudesHistorialPanel" aria-expanded="false">
+                  <div>
+                    <h3 class="font-display text-xl">Historial de solicitudes</h3>
+                    <p class="text-sm text-[var(--text-dim)]">Revisa el estado y prioridad de tus solicitudes.</p>
+                  </div>
+                  <span class="accordion-icon">+</span>
+                </button>
+                <div id="solicitudesHistorialPanel" class="accordion-panel hidden">
+                  <div class="mt-4">
+                    <div class="mb-3 grid gap-3 sm:grid-cols-2">
+                      <select id="solicitudesEstadoFilter" class="input-field">
+                        <option value="todas">Todas por estado</option>
+                        <option value="pendiente">Pendiente</option>
+                        <option value="aceptada">Aceptada</option>
+                        <option value="rechazada">Rechazada</option>
+                        <option value="completada">Completada</option>
+                      </select>
+                      <select id="solicitudesPrioridadFilter" class="input-field">
+                        <option value="todas">Todas por prioridad</option>
+                        <option value="urgente">🔴 Urgente</option>
+                        <option value="normal">🔵 Normal</option>
+                      </select>
+                    </div>
+                    <div id="solicitudesEmpty" class="text-[var(--text-dim)] hidden">No hay solicitudes todavía.</div>
+                    <div id="solicitudesList" class="grid gap-3"></div>
+                  </div>
+                </div>
+              </section>
+            </div>
+          </div>
+        </section>
+
+        <section id="agendasSection" class="accordion-item surface-raised">
+          <button type="button" class="accordion-header" data-accordion-toggle="agendasPanel" aria-expanded="false">
+            <div>
+              <h2 class="font-display text-2xl">Agendas</h2>
+              <p class="text-sm text-[var(--text-dim)]">Tus visitas agendadas por el técnico.</p>
+            </div>
+            <span class="accordion-icon">+</span>
+          </button>
+          <div id="agendasPanel" class="accordion-panel hidden">
+            <div class="mt-4">
+              <div class="mb-3 grid gap-3 sm:grid-cols-2">
+                <select id="agendasSmartFilter" class="input-field">
+                  <option value="todas">Filtro inteligente: todas</option>
+                  <option value="hoy">Hoy</option>
+                  <option value="semana">Esta semana</option>
+                  <option value="proximas">Próximas</option>
+                  <option value="vencidas">Vencidas</option>
+                </select>
+                <select id="agendasEstadoFilter" class="input-field">
+                  <option value="todos">Estado: todos</option>
+                  <option value="aceptada">Aceptadas</option>
+                  <option value="completada">Completadas</option>
+                  <option value="pendiente">Pendientes</option>
+                </select>
+              </div>
+              <div id="agendasEmpty" class="text-[var(--text-dim)] hidden">No hay agendas todavía.</div>
+              <div id="agendasList" class="grid gap-3"></div>
+            </div>
+          </div>
+        </section>
+
+        <section id="calificacionesSection" class="accordion-item surface-raised">
+          <button type="button" class="accordion-header" data-accordion-toggle="calificacionesPanel" aria-expanded="false">
+            <div>
+              <h2 class="font-display text-2xl">Calificar tecnico</h2>
+              <p class="text-sm text-[var(--text-dim)]">Tu calificacion mejora las recomendaciones para otros clientes.</p>
+            </div>
+            <span class="accordion-icon">+</span>
+          </button>
+          <div id="calificacionesPanel" class="accordion-panel hidden">
+            <form id="calificarForm" class="grid gap-3 mt-4 max-w-2xl">
+              <select id="calificarTecnico" class="input-field" required></select>
+              <select id="calificarPuntaje" class="input-field" required>
+                <option value="">Selecciona puntaje</option>
+                <option value="5">5 - Excelente</option>
+                <option value="4">4 - Muy bueno</option>
+                <option value="3">3 - Bueno</option>
+                <option value="2">2 - Regular</option>
+                <option value="1">1 - Malo</option>
+              </select>
+              <textarea id="calificarComentario" rows="3" class="input-field rounded-2xl" placeholder="Comentario (opcional)"></textarea>
+              <button type="submit" class="btn-primary">Enviar calificacion</button>
+              <p id="calificarMsg" class="text-sm text-[var(--text-dim)]"></p>
+            </form>
+          </div>
+        </section>
+      </section>
+      </main>
+    </div>
+
+    <script type="module" src="./cliente.js"></script>
+  </body>
+</html>
