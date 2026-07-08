@@ -68,6 +68,21 @@ let foregroundFcmListenerReady = false
 let notificationToastContainer = null
 let deferredInstallPrompt = null
 
+function isStandaloneMode() {
+  const standaloneMedia = window.matchMedia?.('(display-mode: standalone)')?.matches
+  const standaloneIos = window.navigator.standalone === true
+  return Boolean(standaloneMedia || standaloneIos)
+}
+
+function isIosSafari() {
+  const ua = window.navigator.userAgent || ''
+  const isIos = /iPad|iPhone|iPod/.test(ua)
+  const isWebkit = /WebKit/.test(ua)
+  const isCriOS = /CriOS/.test(ua)
+  const isFxiOS = /FxiOS/.test(ua)
+  return isIos && isWebkit && !isCriOS && !isFxiOS
+}
+
 const state = {
   token: localStorage.getItem(storageKey) || null,
   tecnico: JSON.parse(localStorage.getItem(tecnicoDataKey) || 'null'),
@@ -147,9 +162,21 @@ function showInstallButton(show) {
   installAppButton.classList.toggle('hidden', !show)
 }
 
+function getManualInstallHint() {
+  if (isIosSafari()) {
+    return 'En iPhone: toca Compartir y luego "Agregar a pantalla de inicio".'
+  }
+  return 'Si no aparece el popup, abre el menu del navegador y elige "Instalar aplicacion" o "Agregar a pantalla de inicio".'
+}
+
 async function tryInstallPwa() {
+  if (isStandaloneMode()) {
+    setMessage('La app ya esta instalada en este dispositivo.')
+    return
+  }
+
   if (!deferredInstallPrompt) {
-    setMessage('La instalación directa no está disponible en este navegador. Usa "Agregar a pantalla de inicio".', true)
+    setMessage(getManualInstallHint(), true)
     return
   }
 
@@ -208,11 +235,12 @@ window.addEventListener('beforeinstallprompt', (event) => {
   event.preventDefault()
   deferredInstallPrompt = event
   showInstallButton(true)
+  if (installAppButton) installAppButton.textContent = 'Instalar app'
 })
 
 window.addEventListener('appinstalled', () => {
   deferredInstallPrompt = null
-  showInstallButton(false)
+  if (installAppButton) installAppButton.textContent = 'App instalada'
   setMessage('App instalada. Ya puedes abrir FrioTech como aplicación.')
 })
 
@@ -1416,7 +1444,10 @@ function renderClientes() {
 async function init() {
   if (!loginForm || !logoutButton || !statsPanel || !clientesSection || !agendasSection || !notificacionesSection) return
 
-  showInstallButton(false)
+  showInstallButton(true)
+  if (installAppButton) {
+    installAppButton.textContent = isStandaloneMode() ? 'App instalada' : 'Instalar app'
+  }
   void registerAppServiceWorker()
 
   void ensureForegroundFcmListener()
