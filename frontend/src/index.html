@@ -201,6 +201,22 @@
         </div>
         -->
       </main>
+
+      <div id="iosInstallModal" class="fixed inset-0 z-[70] hidden items-center justify-center p-6">
+        <div id="iosInstallBackdrop" class="absolute inset-0 bg-black/60"></div>
+        <div class="relative z-10 w-full max-w-md surface-raised rounded-3xl p-6 border border-white/10 shadow-2xl">
+          <div class="flex items-center justify-between gap-3 mb-4">
+            <h3 class="font-display text-xl">Instalar en iPhone</h3>
+            <button id="iosInstallClose" type="button" class="btn-ghost px-3 py-1.5">Cerrar</button>
+          </div>
+          <p class="text-sm text-[var(--text-dim)] mb-4">En iOS la instalacion es manual desde Safari.</p>
+          <ol class="grid gap-3 text-sm text-[var(--text)] list-decimal pl-5">
+            <li>Toca el boton <strong>Compartir</strong> en Safari.</li>
+            <li>Selecciona <strong>Agregar a pantalla de inicio</strong>.</li>
+            <li>Toca <strong>Agregar</strong> para terminar.</li>
+          </ol>
+        </div>
+      </div>
     </div>
 
     <script type="module" src="./main.js"></script>

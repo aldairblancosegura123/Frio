@@ -14,6 +14,9 @@ const menuDropdown = document.querySelector('#menuDropdown')
 const menuTechnicianName = document.querySelector('#menuTechnicianName')
 const menuBackdrop = document.querySelector('#menuBackdrop')
 const installAppButton = document.querySelector('#installAppButton')
+const iosInstallModal = document.querySelector('#iosInstallModal')
+const iosInstallBackdrop = document.querySelector('#iosInstallBackdrop')
+const iosInstallClose = document.querySelector('#iosInstallClose')
 const menuItems = document.querySelectorAll('.menu-item[data-action]')
 const statsPanel = document.querySelector('#statsPanel')
 const statusBadges = document.querySelector('#statusBadges')
@@ -169,6 +172,18 @@ function getManualInstallHint() {
   return 'Si no aparece el popup, abre el menu del navegador y elige "Instalar aplicacion" o "Agregar a pantalla de inicio".'
 }
 
+function closeIosInstallModal() {
+  if (!iosInstallModal) return
+  iosInstallModal.classList.add('hidden')
+  iosInstallModal.classList.remove('flex')
+}
+
+function openIosInstallModal() {
+  if (!iosInstallModal) return
+  iosInstallModal.classList.remove('hidden')
+  iosInstallModal.classList.add('flex')
+}
+
 async function tryInstallPwa() {
   if (isStandaloneMode()) {
     setMessage('La app ya esta instalada en este dispositivo.')
@@ -176,6 +191,10 @@ async function tryInstallPwa() {
   }
 
   if (!deferredInstallPrompt) {
+    if (isIosSafari()) {
+      openIosInstallModal()
+      return
+    }
     setMessage(getManualInstallHint(), true)
     return
   }
@@ -225,6 +244,9 @@ registrarClienteButton?.addEventListener('click', (e) => {
 cancelCrearCliente?.addEventListener('click', () => {
   hideCrearForm()
 })
+
+iosInstallClose?.addEventListener('click', closeIosInstallModal)
+iosInstallBackdrop?.addEventListener('click', closeIosInstallModal)
 
 installAppButton?.addEventListener('click', async () => {
   await tryInstallPwa()
