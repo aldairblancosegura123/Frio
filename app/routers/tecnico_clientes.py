@@ -15,17 +15,35 @@ router = APIRouter(prefix="/api/tecnico/clientes", tags=["Técnico - Clientes"])
 async def crear_cliente(
     datos: ClienteCrear, tecnico_id: str = Depends(get_tecnico_actual_id)
 ):
-    existente = await clientes_collection.find_one({"cedula": datos.cedula})
+    cedula = (datos.cedula or "").strip()
+    telefono = (datos.telefono or "").strip()
+
+    existente = await clientes_collection.find_one({
+        "$or": [
+            {"cedula": cedula},
+            {"telefono": telefono},
+        ]
+    })
     if existente:
+        if existente.get("cedula") == cedula:
+            raise HTTPException(
+                status_code=status.HTTP_409_CONFLICT,
+                detail="Ya existe un cliente registrado con esta cédula",
+            )
+        if existente.get("telefono") == telefono:
+            raise HTTPException(
+                status_code=status.HTTP_409_CONFLICT,
+                detail="Ya existe un cliente registrado con este teléfono",
+            )
         raise HTTPException(
             status_code=status.HTTP_409_CONFLICT,
-            detail="Ya existe un cliente registrado con esta cédula",
+            detail="Ya existe un cliente registrado con esa cédula o teléfono",
         )
 
     nuevo_cliente = {
         "nombre": datos.nombre,
-        "cedula": datos.cedula,
-        "telefono": datos.telefono,
+        "cedula": cedula,
+        "telefono": telefono,
         "direccion": datos.direccion,
         "fcm_token": None,
         "id_tecnico_registro": ObjectId(tecnico_id),

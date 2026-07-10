@@ -6,7 +6,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.core.config import settings
-from app.core.database import verificar_conexion
+from app.core.database import verificar_conexion, asegurar_indices_unicos_clientes
 from app.services.scheduler import iniciar_scheduler
 
 from app.routers import (
@@ -28,6 +28,7 @@ async def lifespan(app: FastAPI):
     # --- Startup ---
     conectado = await verificar_conexion()
     print("Conexión a MongoDB:", "OK" if conectado else "FALLÓ")
+    await asegurar_indices_unicos_clientes()
 
     scheduler = iniciar_scheduler()
     print("Scheduler de notificaciones iniciado")

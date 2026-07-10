@@ -23,3 +23,16 @@ async def verificar_conexion():
     except Exception as e:
         print(f"Error conectando a MongoDB: {e}")
         return False
+
+
+async def asegurar_indices_unicos_clientes():
+    """Crea índices únicos en cédula y teléfono para evitar duplicados."""
+    try:
+        await clientes_collection.create_index("cedula", unique=True, name="uniq_clientes_cedula")
+    except Exception as e:
+        print(f"Aviso índice único clientes.cedula: {e}")
+
+    try:
+        await clientes_collection.create_index("telefono", unique=True, name="uniq_clientes_telefono")
+    except Exception as e:
+        print(f"Aviso índice único clientes.telefono: {e}")
