@@ -45,5 +45,5 @@ class ClientePublico(BaseModel):
 
 
 class ClienteLogin(BaseModel):
-    """El cliente solo ingresa con su cédula."""
+    """El cliente ingresa con cédula o teléfono."""
     cedula: str

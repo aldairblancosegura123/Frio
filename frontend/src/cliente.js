@@ -1067,11 +1067,11 @@ async function loadDashboardData() {
   openCalificacionesFromUrlIfNeeded()
 }
 
-async function loginCliente(cedulaONit) {
+async function loginCliente(credencial) {
   const response = await fetch(`${API_BASE}/api/cliente/auth/ingresar`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ cedula: cedulaONit }),
+    body: JSON.stringify({ cedula: credencial }),
   })
 
   if (!response.ok) {
@@ -1084,15 +1084,15 @@ async function loginCliente(cedulaONit) {
 
 clienteLoginForm?.addEventListener('submit', async (event) => {
   event.preventDefault()
-  const cedulaONit = clienteCedulaInput?.value.trim()
-  if (!cedulaONit || cedulaONit.length < 5) {
-    setMessage(clienteLoginMessage, 'Ingresa una cédula o NIT válido.', true)
+  const credencial = clienteCedulaInput?.value.trim()
+  if (!credencial || credencial.length < 5) {
+    setMessage(clienteLoginMessage, 'Ingresa una cédula o teléfono válido.', true)
     return
   }
 
   setMessage(clienteLoginMessage, 'Ingresando...')
   try {
-    const data = await loginCliente(cedulaONit)
+    const data = await loginCliente(credencial)
     setAuth(data.access_token, data.cliente)
     await loadDashboardData()
     void ensureForegroundFcmListener()

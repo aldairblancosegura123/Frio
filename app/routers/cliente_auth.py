@@ -1,5 +1,5 @@
 """
-Acceso del cliente: solo con cédula, sin contraseña.
+Acceso del cliente: con cédula o teléfono, sin contraseña.
 El cliente nunca se autorregistra, lo crea el técnico previamente.
 
 Nota de seguridad: como no hay contraseña, este endpoint emite un token
@@ -19,11 +19,17 @@ router = APIRouter(prefix="/api/cliente/auth", tags=["Auth Cliente"])
 
 @router.post("/ingresar")
 async def ingresar_cliente(datos: ClienteLogin):
-    cliente = await clientes_collection.find_one({"cedula": datos.cedula})
+    credencial = (datos.cedula or "").strip()
+    cliente = await clientes_collection.find_one({
+        "$or": [
+            {"cedula": credencial},
+            {"telefono": credencial},
+        ]
+    })
     if not cliente:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail="No encontramos un cliente registrado con esta cédula. "
+            detail="No encontramos un cliente registrado con esta cédula o teléfono. "
                    "Contacta a tu técnico para que te registre.",
         )
 
